@@ -1,4 +1,4 @@
-import { ArrowUpRight, ChevronDown, Circle, CircleCheck, CircleDot, Link2 } from "lucide-react";
+import { ArrowUpRight, Circle, CircleCheck, CircleDot, Link2, NotebookPen } from "lucide-react";
 import type { ChecklistItemId, ExamFormat, RoadmapStage } from "../data/roadmapData";
 import type { ProgressState, StageProgress, StageStatus } from "../lib/progress";
 import { RoadmapSyllabus } from "./RoadmapSyllabus";
@@ -19,8 +19,6 @@ const dateFormat = new Intl.DateTimeFormat("en", { dateStyle: "medium", timeZone
 interface RoadmapStageCardProps {
   readonly entry: StageProgress;
   readonly current: boolean;
-  readonly isOpen: boolean;
-  readonly onOpenChange: (open: boolean) => void;
   readonly totalStages: number;
   readonly progress: ProgressState;
   readonly onTaskChange: (id: ChecklistItemId, checked: boolean) => void;
@@ -31,98 +29,75 @@ interface RoadmapStageCardProps {
 export function RoadmapStageCard({
   entry,
   current,
-  isOpen,
-  onOpenChange,
   totalStages,
   progress,
   onTaskChange,
   onPassChange,
   onNoteChange,
 }: RoadmapStageCardProps) {
-  const { stage, checkedSteps, totalSteps, remainingSteps, completionPercent, manuallyPassed, status, completionWindow } = entry;
+  const {
+    stage,
+    checkedSteps,
+    totalSteps,
+    remainingSteps,
+    completionPercent,
+    manuallyPassed,
+    status,
+    completionWindow,
+  } = entry;
   const { exam, study, formalPrerequisites, suggestedPreparation }: RoadmapStage = stage;
   const { label, icon: StatusIcon } = statuses[status];
   const minutes = exam.durationMinutes;
   const duration = minutes % 60 === 0 ? `${minutes / 60} hours` : `${minutes} min`;
-  const studyDuration = `${study.weeks.join("–")} weeks · ${study.hours.join("–")} hours`;
+  const headingId = `${stage.id}-heading`;
+  const detailsHeading = `${stage.id}-exam-details`;
   const resourcesHeading = `${stage.id}-resources`;
 
   return (
-    <details
+    <article
       id={stage.id}
-      open={isOpen}
-      onToggle={(event) => onOpenChange(event.currentTarget.open)}
-      className={`group/stage scroll-mt-4 rounded-lg border bg-panel ${current ? "border-accent-line" : "border-line"}`}
+      aria-labelledby={headingId}
+      className="min-w-0 scroll-mt-4 border border-line bg-panel text-ink"
     >
-      <summary
-        aria-current={current ? "step" : undefined}
-        className={`grid min-h-24 cursor-pointer list-none grid-cols-[minmax(0,1fr)_auto] items-center gap-x-3 gap-y-2 rounded-lg px-4 py-3.5 group-open/stage:rounded-b-none md:grid-cols-[minmax(0,1fr)_11rem_8rem_auto] md:gap-x-5 md:px-5 lg:grid-cols-[minmax(0,1fr)_12.5rem_8rem_auto] [&::-webkit-details-marker]:hidden ${current ? "bg-accent-wash/65 hover:bg-accent-wash" : "hover:bg-raised/45"}`}
-      >
-        <span className="min-w-0 space-y-0.5">
-          <span className="block font-mono text-xs text-muted">Stage {stage.order} of {totalStages}</span>
-          <span className="flex flex-wrap items-baseline gap-x-2">
-            <span className="font-mono text-lg font-semibold tracking-tight">{stage.code}</span>
-            {current && <span className="text-xs font-medium text-accent">Current stage</span>}
-          </span>
-          <span className="block text-sm leading-snug text-muted">{stage.name}</span>
-        </span>
-
-        <span className="col-start-1 grid gap-y-0.5 text-xs text-muted md:col-start-2 md:row-start-1">
-          <span className="font-medium text-ink">{examFormats[exam.format]} · <span className="whitespace-nowrap">{duration}</span></span>
-          <span>{studyDuration}</span>
-        </span>
-
-        <span className="col-start-1 grid gap-1.5 text-xs text-muted md:col-start-3 md:row-start-1">
-          <span className="flex flex-wrap items-center gap-x-2 gap-y-0.5 md:grid md:gap-1">
-            <span className="inline-flex items-center gap-1.5">
-              <StatusIcon aria-hidden="true" className="size-3.5 shrink-0" /> {label}
-            </span>
-            <span className="font-mono tabular-nums">{checkedSteps}/{totalSteps} steps</span>
-          </span>
-          <span aria-hidden="true" className="h-1 max-w-32 overflow-hidden rounded-full bg-raised">
-            <span
-              className="block h-full rounded-full bg-accent motion-safe:transition-[width] motion-safe:duration-500"
-              style={{ width: `${completionPercent}%` }}
+      <header className="px-5 pt-5 sm:px-8 sm:pt-7">
+        <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
+          <p className="font-mono text-[0.6875rem] font-medium tracking-[0.12em] text-muted uppercase">
+            Stage {stage.order} of {totalStages}
+            {current && <span className="ml-2.5 border-l border-line pl-2.5 text-accent">Current stage</span>}
+          </p>
+          <span className="inline-flex items-center gap-1.5 text-xs font-medium text-muted">
+            <StatusIcon
+              aria-hidden="true"
+              className={status === "not-started" ? "size-3.5" : "size-3.5 text-accent"}
             />
+            {label}
           </span>
-        </span>
+        </div>
 
-        <ChevronDown
-          aria-hidden="true"
-          className="col-start-2 row-span-3 row-start-1 size-4 shrink-0 text-muted group-open/stage:rotate-180 motion-safe:transition-transform md:col-start-4 md:row-span-1"
-        />
-      </summary>
+        <h3 id={headingId} className="mt-5 grid gap-2 sm:mt-6">
+          <span className="font-display text-5xl leading-none font-bold tracking-[-0.07em] text-ink sm:text-6xl">
+            {stage.code}
+          </span>
+          <span className="text-base leading-snug font-medium text-muted sm:text-lg">{stage.name}</span>
+        </h3>
 
-      <div className="divide-y divide-line border-t border-line">
-        <dl className="grid gap-x-6 gap-y-4 px-4 py-4 sm:grid-cols-2 md:px-5">
+        <dl className="mt-6 grid grid-cols-2 gap-x-3 gap-y-4 border-y border-line py-4 sm:grid-cols-3 sm:gap-x-5">
           <div>
-            <dt className="text-xs font-medium text-muted">Suggested preparation</dt>
-            <dd className="mt-1 text-sm">{suggestedPreparation}</dd>
-          </div>
-          <div>
-            <dt className="text-xs font-medium text-muted">Formal prerequisite</dt>
-            <dd className="mt-1 space-y-1 text-sm">
-              {formalPrerequisites.length === 0
-                ? "None"
-                : formalPrerequisites.map(({ certification, description }) => <p key={certification}>{description}</p>)}
+            <dt className="font-mono text-[0.6875rem] tracking-wider text-muted uppercase">Exam format</dt>
+            <dd className="mt-1 text-sm font-medium leading-tight">
+              {examFormats[exam.format]} <span className="block sm:inline-block"><span className="hidden sm:inline">· </span>{duration}</span>
             </dd>
           </div>
           <div>
-            <dt className="text-xs font-medium text-muted">Exam logistics</dt>
-            <dd className="mt-1 text-sm">
-              Online proctored · {exam.passingScorePercent}% to pass
-              {exam.questionCount !== null && ` · ${exam.questionCount} questions`}
+            <dt className="font-mono text-[0.6875rem] tracking-wider text-muted uppercase">Study estimate</dt>
+            <dd className="mt-1 text-sm font-medium leading-tight">
+              {study.weeks.join("–")} weeks <span className="block sm:inline-block"><span className="hidden sm:inline">· </span>{study.hours.join("–")} hours</span>
             </dd>
-            {exam.simulator && (
-              <dd className="mt-1 text-xs text-muted">
-                {exam.simulator.attempts} {exam.simulator.provider} attempts with standard registration. {exam.simulator.excludedRegistration} excludes access.
-              </dd>
-            )}
           </div>
           {completionWindow && (
-            <div>
-              <dt className="text-xs font-medium text-muted">Forecast completion window</dt>
-              <dd className="mt-1 text-sm tabular-nums">
+            <div className="col-span-full sm:col-span-1">
+              <dt className="font-mono text-[0.6875rem] tracking-wider text-muted uppercase">Completion forecast</dt>
+              <dd className="mt-1 text-sm font-medium leading-tight tabular-nums">
                 {dateFormat.formatRange(
                   new Date(`${completionWindow.earliest}T00:00:00Z`),
                   new Date(`${completionWindow.latest}T00:00:00Z`),
@@ -131,84 +106,134 @@ export function RoadmapStageCard({
             </div>
           )}
         </dl>
+      </header>
 
-        <div className="grid gap-5 px-4 py-5 md:grid-cols-2 md:gap-7 md:px-5">
-          <div className="min-w-0 space-y-4">
-            <fieldset className="min-w-0">
-              <legend className="mb-2 text-sm font-semibold">
-                Action checklist <span className="ml-1 font-normal text-muted">· {remainingSteps} remaining</span>
-              </legend>
-              <div className="divide-y divide-line rounded-md border border-line bg-canvas">
-                {stage.checklist.map((item) => {
-                  const checked = progress.checkedTaskIds.includes(item.id);
-                  const detailId = "detail" in item ? `${item.id}-detail` : undefined;
-
-                  return (
-                    <div key={item.id}>
-                      <label className="flex min-h-11 cursor-pointer items-start gap-2.5 px-3 py-2.5 text-sm">
-                        <input
-                          id={item.id}
-                          type="checkbox"
-                          className="mt-0.5 size-4 shrink-0 accent-accent"
-                          aria-describedby={detailId}
-                          checked={checked}
-                          onChange={(event) => onTaskChange(item.id, event.currentTarget.checked)}
-                        />
-                        <span className={checked ? "text-muted line-through" : undefined}>{item.label}</span>
-                      </label>
-                      {"detail" in item && <p id={detailId} className="px-3 pb-2.5 pl-9.5 text-xs text-muted">{item.detail}</p>}
-                    </div>
-                  );
-                })}
-              </div>
-            </fieldset>
-
-            <label className="flex min-h-11 cursor-pointer items-center gap-2.5 rounded-md border border-line bg-canvas px-3 text-sm font-medium">
-              <input
-                type="checkbox"
-                className="size-4 shrink-0 accent-accent"
-                checked={manuallyPassed}
-                onChange={(event) => onPassChange(event.currentTarget.checked)}
+      <div className="grid gap-8 px-5 pt-6 pb-7 sm:px-8 sm:pt-7 sm:pb-8 xl:grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)]">
+        <div className="min-w-0">
+          <fieldset className="min-w-0">
+            <legend className="text-lg font-semibold tracking-tight">Action checklist</legend>
+            <div className="mt-2.5 flex flex-wrap items-center justify-between gap-x-3 text-xs text-muted">
+              <span className="font-mono tabular-nums">{checkedSteps} / {totalSteps} steps</span>
+              <span>{remainingSteps} remaining</span>
+            </div>
+            <div aria-hidden="true" className="mt-2.5 h-[3px] overflow-hidden bg-raised">
+              <div
+                className="h-full bg-accent motion-safe:transition-[width] motion-safe:duration-500"
+                style={{ width: `${completionPercent}%` }}
               />
-              Mark Cert Passed
-            </label>
-            <label className="grid min-w-0 gap-2 text-sm font-medium">
+            </div>
+            <div className="mt-1 divide-y divide-line border-b border-line">
+              {stage.checklist.map((item) => {
+                const checked = progress.checkedTaskIds.includes(item.id);
+                const detailId = "detail" in item ? `${item.id}-detail` : undefined;
+
+                return (
+                  <div key={item.id} className="relative hover:bg-raised/35">
+                    <label className="flex min-h-12 cursor-pointer items-start gap-3 py-3.5 text-sm leading-relaxed">
+                      <input
+                        id={item.id}
+                        type="checkbox"
+                        className="mt-[3px] size-[1.125rem] shrink-0 cursor-pointer accent-accent"
+                        aria-describedby={detailId}
+                        checked={checked}
+                        onChange={(event) => onTaskChange(item.id, event.currentTarget.checked)}
+                      />
+                      <span className={checked ? "text-muted line-through" : undefined}>{item.label}</span>
+                    </label>
+                    {"detail" in item && (
+                      <p id={detailId} className="-mt-1 pb-3.5 pl-7.5 text-xs leading-relaxed text-muted">{item.detail}</p>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          </fieldset>
+
+          <label className="mt-4 flex min-h-12 cursor-pointer items-center gap-3 border border-accent-line bg-accent-wash px-3 py-2.5 text-sm font-medium">
+            <input
+              type="checkbox"
+              className="size-[1.125rem] shrink-0 cursor-pointer accent-accent"
+              checked={manuallyPassed}
+              onChange={(event) => onPassChange(event.currentTarget.checked)}
+            />
+            Mark Cert Passed
+          </label>
+
+          <label className="mt-6 grid min-w-0 gap-2 text-sm font-medium">
+            <span className="flex items-center gap-2">
+              <NotebookPen aria-hidden="true" className="size-4 text-muted" />
               Personal notes
-              <textarea
-                className="min-w-0 rounded-md border border-line bg-canvas px-3 py-2 font-normal"
-                rows={2}
-                value={progress.notes[stage.id] ?? ""}
-                onChange={(event) => onNoteChange(event.currentTarget.value)}
-              />
-            </label>
-          </div>
-
-          <RoadmapSyllabus stageId={stage.id} domains={stage.domains} />
+            </span>
+            <textarea
+              className="min-h-24 w-full min-w-0 resize-y border border-line bg-canvas px-3 py-2.5 font-normal"
+              rows={3}
+              value={progress.notes[stage.id] ?? ""}
+              onChange={(event) => onNoteChange(event.currentTarget.value)}
+            />
+          </label>
         </div>
 
-        <section aria-labelledby={resourcesHeading} className="px-4 py-4 md:px-5">
-          <div className="mb-2 flex flex-wrap items-center justify-between gap-x-3">
-            <h3 id={resourcesHeading} className="text-sm font-semibold">Official resources</h3>
-            <a
-              href={`#${stage.id}`}
-              aria-label={`Link to ${stage.code} stage`}
-              className="inline-flex min-h-8 items-center gap-1.5 rounded-sm text-xs text-muted hover:text-accent"
-            >
-              <Link2 aria-hidden="true" className="size-3.5" /> Stage link
-            </a>
-          </div>
-          <ul role="list" className="grid grid-cols-2 gap-2 sm:flex sm:flex-wrap">
-            {stage.resources.map(({ label, href }) => (
-              <li key={href} className="min-w-0">
-                <a href={href} className="flex h-full min-h-10 items-center justify-between gap-1.5 rounded-md border border-line px-2.5 py-1.5 text-xs text-accent hover:bg-accent-wash">
-                  <span className="min-w-0 wrap-anywhere">{label}</span>
-                  <ArrowUpRight aria-hidden="true" className="size-3.5 shrink-0" />
-                </a>
-              </li>
-            ))}
-          </ul>
-        </section>
+        <div className="min-w-0 border-t border-line pt-6 xl:border-t-0 xl:border-l xl:pt-0 xl:pl-7">
+          <RoadmapSyllabus stageId={stage.id} domains={stage.domains} />
+
+          <section aria-labelledby={detailsHeading} className="mt-6">
+            <h4 id={detailsHeading} className="text-base font-semibold tracking-tight">Exam details</h4>
+            <dl className="mt-2 grid gap-3 text-sm leading-relaxed">
+              <div>
+                <dt className="font-medium">Formal prerequisite</dt>
+                <dd className="text-muted">
+                  {formalPrerequisites.length === 0
+                    ? "None"
+                    : formalPrerequisites.map(({ certification, description }) => <p key={certification}>{description}</p>)}
+                </dd>
+              </div>
+              <div>
+                <dt className="font-medium">Suggested preparation</dt>
+                <dd className="text-muted">{suggestedPreparation}</dd>
+              </div>
+              <div>
+                <dt className="font-medium">Exam logistics</dt>
+                <dd className="text-muted">
+                  Online proctored · {exam.passingScorePercent}% to pass
+                  {exam.questionCount !== null && ` · ${exam.questionCount} questions`}
+                </dd>
+                {exam.simulator && (
+                  <dd className="mt-1.5 text-xs text-muted">
+                    {exam.simulator.attempts} {exam.simulator.provider} attempts with standard registration.
+                    {" "}{exam.simulator.excludedRegistration} excludes access.
+                  </dd>
+                )}
+              </div>
+            </dl>
+          </section>
+
+          <section aria-labelledby={resourcesHeading} className="mt-6 border-t border-line pt-5">
+            <div className="flex flex-wrap items-center justify-between gap-x-3">
+              <h4 id={resourcesHeading} className="text-base font-semibold tracking-tight">Official resources</h4>
+              <a
+                href={`#${stage.id}`}
+                aria-label={`Link to ${stage.code} stage`}
+                className="inline-flex min-h-10 items-center gap-1.5 text-xs text-muted hover:text-accent"
+              >
+                <Link2 aria-hidden="true" className="size-3.5" /> Stage link
+              </a>
+            </div>
+            <ul role="list" className="divide-y divide-line text-sm">
+              {stage.resources.map(({ label, href }) => (
+                <li key={href}>
+                  <a
+                    href={href}
+                    className="group flex min-h-10 items-center justify-between gap-3 py-2.5 text-accent hover:underline"
+                  >
+                    <span className="wrap-anywhere">{label}</span>
+                    <ArrowUpRight aria-hidden="true" className="size-3.5 shrink-0" />
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </section>
+        </div>
       </div>
-    </details>
+    </article>
   );
 }

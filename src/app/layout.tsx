@@ -1,5 +1,13 @@
 import type { Metadata } from "next";
+import localFont from "next/font/local";
 import "./globals.css";
+
+const spaceGrotesk = localFont({
+  src: "./assets/space-grotesk.woff2",
+  weight: "400 700",
+  display: "swap",
+  variable: "--tracker-display",
+});
 
 const title = "Kubernetes & Kubestronaut Roadmap | Oreste Gabo";
 const description =
@@ -21,7 +29,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html lang="en">
+    <html lang="en" className={spaceGrotesk.variable}>
       <body>{children}</body>
     </html>
   );

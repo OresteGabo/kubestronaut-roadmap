@@ -11,7 +11,7 @@ interface TrackerBackupControlsProps {
 }
 
 const actionClass =
-  "inline-flex min-h-10 items-center justify-center gap-2 rounded-md border border-line bg-panel px-3 text-sm font-medium whitespace-nowrap hover:bg-raised disabled:opacity-50";
+  "inline-flex min-h-11 items-center justify-center gap-1.5 rounded-sm px-2 text-xs font-medium whitespace-nowrap text-muted hover:bg-raised hover:text-ink disabled:opacity-50 sm:gap-2 sm:px-3 sm:text-sm";
 
 export function TrackerBackupControls({ data, storage }: TrackerBackupControlsProps) {
   const fileInput = useRef<HTMLInputElement>(null);
@@ -79,8 +79,8 @@ export function TrackerBackupControls({ data, storage }: TrackerBackupControlsPr
   }
 
   return (
-    <div className="min-w-0 lg:max-w-md">
-      <div role="group" aria-label="Progress backup" className="flex flex-wrap gap-2 lg:justify-end">
+    <div className="min-w-0 max-w-md">
+      <div role="group" aria-label="Progress backup" className="-mx-2 flex flex-wrap sm:-mx-3 lg:justify-end">
         <button type="button" className={actionClass} onClick={exportBackup}>
           <Download aria-hidden="true" className="size-4" /> Export JSON
         </button>
@@ -88,7 +88,7 @@ export function TrackerBackupControls({ data, storage }: TrackerBackupControlsPr
           <Upload aria-hidden="true" className="size-4" /> Import JSON
         </button>
         <input ref={fileInput} type="file" accept=".json,application/json" hidden onChange={importBackup} />
-        <button type="button" className={actionClass + " text-muted"} disabled={importing} onClick={resetProgress}>
+        <button type="button" className={actionClass} disabled={importing} onClick={resetProgress}>
           <RotateCcw aria-hidden="true" className="size-4" /> Reset Progress
         </button>
       </div>

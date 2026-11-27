@@ -10,8 +10,8 @@ export default function Home() {
 
   return (
     <Tracker>
-      <details className="group/eligibility mt-3 rounded-lg border border-line bg-panel">
-        <summary className="flex min-h-11 cursor-pointer list-none items-center gap-2.5 rounded-lg px-3 py-2 text-sm hover:bg-raised/45 sm:px-4 [&::-webkit-details-marker]:hidden">
+      <details className="group/eligibility mt-10 border-y border-line sm:mt-14">
+        <summary className="flex min-h-13 cursor-pointer list-none items-center gap-3 px-1 py-2 text-sm hover:text-accent sm:px-3 [&::-webkit-details-marker]:hidden">
           <Info aria-hidden="true" className="size-4 shrink-0 text-accent" />
           <span className="flex min-w-0 flex-1 flex-wrap items-baseline gap-x-2 text-sm">
             <span className="font-medium">Kubestronaut eligibility</span>
@@ -21,7 +21,7 @@ export default function Home() {
           </span>
           <ChevronDown aria-hidden="true" className="size-4 shrink-0 text-muted group-open/eligibility:rotate-180 motion-safe:transition-transform" />
         </summary>
-        <div className="space-y-2 border-t border-line px-4 py-3 text-sm leading-relaxed text-muted">
+        <div className="max-w-4xl space-y-3 px-1 pt-1 pb-5 text-sm leading-relaxed text-muted sm:px-3">
           <p>{eligibility}</p>
           <p>{maintenance}</p>
           <ul role="list" className="flex flex-wrap gap-x-4 gap-y-1">

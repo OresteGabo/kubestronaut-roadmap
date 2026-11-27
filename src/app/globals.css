@@ -1,6 +1,7 @@
 @import "tailwindcss";
 
 @theme inline {
+  --font-display: var(--tracker-display), system-ui, sans-serif;
   --color-canvas: var(--tracker-canvas);
   --color-panel: var(--tracker-panel);
   --color-raised: var(--tracker-raised);
@@ -8,6 +9,7 @@
   --color-ink: var(--tracker-ink);
   --color-muted: var(--tracker-muted);
   --color-accent: var(--tracker-accent);
+  --color-accent-ink: var(--tracker-accent-ink);
   --color-accent-wash: var(--tracker-accent-wash);
   --color-accent-line: var(--tracker-accent-line);
 }
@@ -15,35 +17,38 @@
 :root,
 [data-theme="dark"] {
   color-scheme: dark;
-  --tracker-canvas: #0c1016;
-  --tracker-panel: #121820;
-  --tracker-raised: #1b222c;
-  --tracker-line: #2a3442;
-  --tracker-ink: #f0f4fa;
-  --tracker-muted: #a0adbf;
-  --tracker-accent: #80afff;
-  --tracker-accent-wash: #182841;
-  --tracker-accent-line: #3d5c88;
+  --tracker-canvas: #181612;
+  --tracker-panel: #211d18;
+  --tracker-raised: #2c261f;
+  --tracker-line: #433930;
+  --tracker-ink: #f7efe3;
+  --tracker-muted: #bcafa0;
+  --tracker-accent: #ff8d6a;
+  --tracker-accent-ink: #22130e;
+  --tracker-accent-wash: #3a251e;
+  --tracker-accent-line: #8d4d38;
 }
 
 [data-theme="light"] {
   color-scheme: light;
-  --tracker-canvas: #f4f6fa;
-  --tracker-panel: #ffffff;
-  --tracker-raised: #eaf0f7;
-  --tracker-line: #d3dce8;
-  --tracker-ink: #172438;
-  --tracker-muted: #4a5c72;
-  --tracker-accent: #205aa5;
-  --tracker-accent-wash: #e8f0fe;
-  --tracker-accent-line: #8baae0;
+  --tracker-canvas: #f4efe5;
+  --tracker-panel: #fbf8f0;
+  --tracker-raised: #ebe2d5;
+  --tracker-line: #d9cdbb;
+  --tracker-ink: #2a2018;
+  --tracker-muted: #68594d;
+  --tracker-accent: #a6381d;
+  --tracker-accent-ink: #fff6ed;
+  --tracker-accent-wash: #f4e2d5;
+  --tracker-accent-line: #c8846c;
+}
+
+body {
+  margin: 0;
+  background: var(--tracker-canvas);
 }
 
 [data-theme] :where(a, button, input, summary, textarea):focus-visible {
   outline: 2px solid var(--tracker-accent);
   outline-offset: 3px;
-}
-
-[data-theme] summary:focus-visible {
-  outline-offset: -3px;
 }

@@ -1,11 +1,4 @@
-import { CalendarDays, CircleCheck, Clock3, ListChecks } from "lucide-react";
-import { parseCalendarDate, type CalendarDate } from "../lib/calendarDate";
 import type { RoadmapProgress } from "../lib/progress";
-
-interface DashboardSummaryProps {
-  readonly summary: RoadmapProgress;
-  readonly onDateChange: (date: CalendarDate | null) => void;
-}
 
 const estimateNumber = new Intl.NumberFormat("en", { maximumFractionDigits: 1 });
 
@@ -15,15 +8,15 @@ function formatRange({ min, max }: { min: number; max: number }) {
   return minimum === maximum ? minimum : `${minimum}–${maximum}`;
 }
 
-export function DashboardSummary({ summary, onDateChange }: DashboardSummaryProps) {
+export function DashboardSummary({ summary }: { readonly summary: RoadmapProgress }) {
   const percent = Math.round(summary.completionPercent);
 
   return (
-    <section aria-labelledby="completion-heading" className="overflow-hidden rounded-xl border border-line bg-panel">
-      <div className="bg-linear-to-r from-accent-wash/70 to-transparent p-5 sm:px-6">
-        <div className="mb-4 flex items-baseline justify-between gap-3">
-          <h2 id="completion-heading" className="text-sm font-semibold">Overall completion</h2>
-          <span className="font-mono text-2xl font-semibold tracking-tight text-accent tabular-nums">{percent}%</span>
+    <section aria-labelledby="completion-heading" className="mt-5 grid border-y border-line sm:mt-7 lg:grid-cols-[1.3fr_3fr]">
+      <div className="border-b border-line py-5 lg:border-r lg:border-b-0 lg:py-6 lg:pr-7">
+        <div className="flex items-baseline justify-between gap-2">
+          <h2 id="completion-heading" className="text-sm font-medium text-muted">Overall completion</h2>
+          <span className="font-display text-4xl leading-none font-semibold tracking-[-0.07em] text-accent tabular-nums">{percent}%</span>
         </div>
         <div
           role="progressbar"
@@ -31,7 +24,7 @@ export function DashboardSummary({ summary, onDateChange }: DashboardSummaryProp
           aria-valuemin={0}
           aria-valuemax={100}
           aria-valuenow={percent}
-          className="h-2 overflow-hidden rounded-full bg-raised ring-1 ring-line"
+          className="mt-3 h-1.5 overflow-hidden rounded-full bg-raised ring-1 ring-line"
         >
           <div
             className="h-full rounded-full bg-accent motion-safe:transition-[width] motion-safe:duration-500 motion-safe:ease-out"
@@ -39,49 +32,29 @@ export function DashboardSummary({ summary, onDateChange }: DashboardSummaryProp
           />
         </div>
       </div>
-
-      <div className="grid grid-cols-2 gap-px border-t border-line bg-line lg:grid-cols-[1fr_1fr_1.2fr_1fr]">
-        <div className="min-w-0 bg-panel px-4 py-4 sm:px-6">
-          <p className="flex items-center gap-2 text-sm text-muted">
-            <ListChecks aria-hidden="true" className="size-4 shrink-0" /> Steps done
-          </p>
-          <p className="mt-2 font-mono text-xl font-semibold tabular-nums">
-            {summary.checkedSteps} <span className="text-muted">/ {summary.totalSteps}</span>
+      <dl className="grid grid-cols-[1fr_1fr] sm:grid-cols-[0.9fr_0.9fr_1.5fr]">
+        <div className="min-w-0 py-4 sm:pr-5 lg:px-6 lg:py-6">
+          <dt className="text-sm text-muted">Steps done</dt>
+          <dd className="mt-1 font-display text-2xl leading-none font-semibold tracking-tight tabular-nums sm:text-3xl">
+            {summary.checkedSteps} <span className="font-normal text-muted">/ {summary.totalSteps}</span>
             <span className="sr-only"> steps done</span>
-          </p>
+          </dd>
         </div>
-        <div className="min-w-0 bg-panel px-4 py-4 sm:px-6">
-          <p className="flex items-center gap-2 text-sm text-muted">
-            <CircleCheck aria-hidden="true" className="size-4 shrink-0" /> Certs passed
-          </p>
-          <p className="mt-2 font-mono text-xl font-semibold tabular-nums">
-            {summary.certificationsPassed} <span className="text-muted">/ {summary.totalCertifications}</span>
+        <div className="min-w-0 border-l border-line py-4 pl-4 sm:px-5 lg:px-6 lg:py-6">
+          <dt className="text-sm text-muted">Certs passed</dt>
+          <dd className="mt-1 font-display text-2xl leading-none font-semibold tracking-tight tabular-nums sm:text-3xl">
+            {summary.certificationsPassed} <span className="font-normal text-muted">/ {summary.totalCertifications}</span>
             <span className="sr-only"> certs passed</span>
-          </p>
+          </dd>
         </div>
-        <div className="col-span-2 min-w-0 bg-panel px-4 py-4 sm:col-span-1 sm:px-6">
-          <p className="flex items-center gap-2 text-sm text-muted">
-            <Clock3 aria-hidden="true" className="size-4 shrink-0" /> Estimated study left
-          </p>
-          <p className="mt-2 flex flex-wrap items-baseline gap-x-3 font-mono text-lg font-semibold tabular-nums">
-            <span>{formatRange(summary.remainingStudy.weeks)} <span className="text-sm font-normal text-muted">weeks</span></span>
-            <span>{formatRange(summary.remainingStudy.hours)} <span className="text-sm font-normal text-muted">hours</span></span>
-          </p>
+        <div className="col-span-2 min-w-0 border-t border-line py-4 sm:col-span-1 sm:border-t-0 sm:border-l sm:pl-5 lg:py-6 lg:pl-6">
+          <dt className="text-sm text-muted">Estimated study left</dt>
+          <dd className="mt-1 flex flex-wrap items-baseline gap-x-4 gap-y-1 font-display text-2xl leading-none font-semibold tracking-tight tabular-nums sm:text-3xl">
+            <span className="whitespace-nowrap">{formatRange(summary.remainingStudy.weeks)} <span className="text-sm font-normal tracking-normal text-muted">weeks</span></span>
+            <span className="whitespace-nowrap">{formatRange(summary.remainingStudy.hours)} <span className="text-sm font-normal tracking-normal text-muted">hours</span></span>
+          </dd>
         </div>
-        <div className="col-span-2 min-w-0 bg-panel px-4 py-4 sm:col-span-1 sm:px-6">
-          <label className="grid gap-2 text-sm text-muted">
-            <span className="flex items-center gap-2">
-              <CalendarDays aria-hidden="true" className="size-4 shrink-0" /> Target start date
-            </span>
-            <input
-              type="date"
-              className="w-full min-w-0 rounded-md border border-line bg-canvas px-2.5 py-1.5 font-mono text-ink"
-              value={summary.startDate}
-              onChange={(event) => onDateChange(parseCalendarDate(event.currentTarget.value))}
-            />
-          </label>
-        </div>
-      </div>
+      </dl>
     </section>
   );
 }
