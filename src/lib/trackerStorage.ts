@@ -1,4 +1,4 @@
-import { awsModules, csModules, type LearningTaskId } from "../data/learningData";
+import { awsModules, type LearningTaskId } from "../data/learningData";
 import { roadmapData, type ChecklistItemId, type StageId } from "../data/roadmapData";
 import { parseCalendarDate } from "./calendarDate";
 import { createProgressState, type ProgressState } from "./progress";
@@ -24,7 +24,7 @@ const taskIds: ReadonlySet<string> = new Set(
   roadmapData.flatMap(({ checklist }) => checklist.map(({ id }) => id)),
 );
 const learningTaskIds: ReadonlySet<string> = new Set(
-  [...awsModules, ...csModules].flatMap(({ tasks }) => tasks.map(({ id }) => id)),
+  awsModules.flatMap(({ tasks }) => tasks.map(({ id }) => id)),
 );
 const roadmapIdPattern = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 
@@ -66,7 +66,7 @@ export function readTrackerData(input: string, source: "storage" | "backup"): Re
 
   const learningCheckedTaskIds = isLegacy ? [] : payload.learningCheckedTaskIds;
   if (!Array.isArray(learningCheckedTaskIds) || !learningCheckedTaskIds.every(isRoadmapId)) {
-    return { ok: false, message: "The AWS or computer science checklist is invalid." };
+    return { ok: false, message: "The AWS checklist is invalid." };
   }
 
   const { checkedTaskIds, manualPasses, notes, targetStartDate } = progress;

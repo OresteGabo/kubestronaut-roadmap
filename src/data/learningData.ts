@@ -12,7 +12,7 @@ export interface LearningModule {
     readonly label: string;
     readonly href: string;
   }[];
-  readonly certification?: {
+  readonly certification: {
     readonly code: string;
     readonly priority: "Recommended first" | "Optional foundation" | "Specialization";
     readonly versionNote?: string;
@@ -51,6 +51,7 @@ export const awsModules = [
       },
     ],
     resources: [
+      { label: "AWS Cloud Practitioner certification and exam prep", href: "https://aws.amazon.com/certification/certified-cloud-practitioner/" },
       { label: "AWS CLF-C02 exam guide", href: "https://docs.aws.amazon.com/aws-certification/latest/cloud-practitioner-02/" },
       { label: "AWS Cloud Essentials courses", href: "https://aws.amazon.com/getting-started/cloud-essentials/" },
       { label: "AWS Educate labs", href: "https://aws.amazon.com/education/awseducate/" },
@@ -122,6 +123,7 @@ export const awsModules = [
       },
     ],
     resources: [
+      { label: "AWS CloudOps Engineer certification and exam prep", href: "https://aws.amazon.com/certification/certified-cloudops-engineer-associate/" },
       { label: "AWS SOA-C03 exam guide", href: "https://docs.aws.amazon.com/aws-certification/latest/sysops-administrator-associate-03/" },
       { label: "CloudWatch dashboard quickstart", href: "https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/GettingStarted.html" },
       { label: "Optional lab: Use ECR images with EKS", href: "https://docs.aws.amazon.com/AmazonECR/latest/userguide/ECR_on_EKS.html" },
@@ -161,6 +163,7 @@ export const awsModules = [
       },
     ],
     resources: [
+      { label: "AWS Developer certification and exam prep", href: "https://aws.amazon.com/certification/certified-developer-associate/" },
       { label: "AWS DVA-C03 exam guide", href: "https://docs.aws.amazon.com/aws-certification/latest/developer-associate-03/" },
       { label: "AWS Developer Associate exam transition", href: "https://aws.amazon.com/blogs/training-and-certification/september-2026-new-offerings/" },
       { label: "Deploy a sample application with AWS SAM", href: "https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/serverless-getting-started-hello-world.html" },
@@ -168,149 +171,4 @@ export const awsModules = [
   },
 ] as const satisfies readonly LearningModule[];
 
-export const csModules = [
-  {
-    id: "cs-programming",
-    title: "Programming & algorithms",
-    summary: "Use one language consistently while you build problem-solving skills you can transfer to other languages.",
-    outcome: "A tested command-line program and short notes explaining your algorithm and data structure choices.",
-    tasks: [
-      {
-        id: "cs-programming-language",
-        label: "Choose Python or TypeScript and write a CLI that parses a real dataset, summarizes it, and handles invalid input.",
-      },
-      {
-        id: "cs-programming-structures",
-        label: "Solve exercises with arrays, hash maps, stacks, queues, trees, and graphs. Explain when each structure fits.",
-      },
-      {
-        id: "cs-programming-complexity",
-        label: "Implement binary search and one graph traversal. Explain their time and space complexity and compare with a simpler approach.",
-      },
-      {
-        id: "cs-programming-testing",
-        label: "Test normal, empty, and malformed inputs and document how to run the program from a fresh checkout.",
-      },
-    ],
-    resources: [
-      { label: "Harvard CS50x", href: "https://cs50.harvard.edu/x/" },
-      { label: "MIT Introduction to Algorithms", href: "https://ocw.mit.edu/courses/6-006-introduction-to-algorithms-spring-2020/" },
-    ],
-  },
-  {
-    id: "cs-systems",
-    title: "Systems & networking",
-    summary: "Understand how Linux runs your code and how a request reaches a service, including when it fails.",
-    outcome: "A short troubleshooting notebook with a network diagram and examples you can reproduce locally.",
-    tasks: [
-      {
-        id: "cs-systems-linux",
-        label: "Practice shell pipelines, files, and permissions. Inspect your own processes and identify how they use CPU and memory.",
-      },
-      {
-        id: "cs-systems-concurrency",
-        label: "Read about processes, threads, and virtual memory, then write a small parallel program and compare it with a sequential version.",
-      },
-      {
-        id: "cs-systems-requests",
-        label: "Diagram a request through DNS, TCP, TLS, and HTTP. Inspect headers and status codes from a service you run locally.",
-      },
-      {
-        id: "cs-systems-debug",
-        label: "Simulate a service outage or bad port in your local setup. Use service logs and socket state to isolate the cause.",
-      },
-    ],
-    resources: [
-      { label: "Operating Systems: Three Easy Pieces", href: "https://pages.cs.wisc.edu/~remzi/OSTEP/" },
-      { label: "MDN overview of HTTP", href: "https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/Overview" },
-      { label: "The Missing Semester of Your CS Education", href: "https://missing.csail.mit.edu/" },
-    ],
-  },
-  {
-    id: "cs-backend",
-    title: "SQL & backend",
-    summary: "Make application data reliable and expose it through a well-documented API.",
-    outcome: "A backend service with migrations, a seeded PostgreSQL database, and an API contract.",
-    tasks: [
-      {
-        id: "cs-backend-schema",
-        label: "Model a real workflow in PostgreSQL. Add keys, constraints, and migrations, then seed the database with sample data.",
-      },
-      {
-        id: "cs-backend-query",
-        label: "Practice joins and transactions. Use EXPLAIN to compare a representative query before and after adding an index.",
-      },
-      {
-        id: "cs-backend-api",
-        label: "Build a small HTTP API with input validation, parameterized SQL, and predictable error responses.",
-      },
-      {
-        id: "cs-backend-contract",
-        label: "Describe the API with OpenAPI and test valid requests, invalid inputs, and an unsuccessful write.",
-      },
-    ],
-    resources: [
-      { label: "PostgreSQL tutorial", href: "https://www.postgresql.org/docs/current/tutorial.html" },
-      { label: "OpenAPI specification", href: "https://spec.openapis.org/oas/latest.html" },
-    ],
-  },
-  {
-    id: "cs-engineering-workflow",
-    title: "Engineering workflow",
-    summary: "Practice the habits that make software easier for someone else to run, review, and maintain.",
-    outcome: "A project with a reviewed pull request, automated checks, and reproducible local setup.",
-    tasks: [
-      {
-        id: "cs-engineering-workflow-git",
-        label: "Make a focused Git branch, write clear commits, and ask a peer to review a pull request.",
-      },
-      {
-        id: "cs-engineering-workflow-tests",
-        label: "Add unit tests for core logic and integration tests for the API or database boundary.",
-      },
-      {
-        id: "cs-engineering-workflow-ci",
-        label: "Run lint, tests, and build in GitHub Actions on pull requests. Check that a failing test blocks a green run.",
-      },
-      {
-        id: "cs-engineering-workflow-reproduce",
-        label: "Document setup and verify a clean checkout. If you use containers, run the app and its dependencies with Docker Compose.",
-      },
-    ],
-    resources: [
-      { label: "Pro Git", href: "https://git-scm.com/book/en/v2" },
-      { label: "GitHub Actions quickstart", href: "https://docs.github.com/en/actions/get-started/quickstart" },
-    ],
-  },
-  {
-    id: "cs-portfolio",
-    title: "Portfolio & internship prep",
-    summary: "Turn coursework and infrastructure labs into work you can show and explain in an internship interview.",
-    outcome: "Two portfolio projects, a tailored résumé, and an application tracker.",
-    tasks: [
-      {
-        id: "cs-portfolio-projects",
-        label: "Publish a backend project and one systems or cloud project. Include a demo or screenshots and reproducible setup.",
-      },
-      {
-        id: "cs-portfolio-case-study",
-        label: "Write a short case study for each project explaining the problem, a design trade-off, and how you validated the result.",
-      },
-      {
-        id: "cs-portfolio-resume",
-        label: "Pin the project repositories, link them from your résumé, and ask your campus career service or a peer for feedback.",
-      },
-      {
-        id: "cs-portfolio-apply",
-        label: "Track internship deadlines, tailor your applications, and practice explaining a project and its trade-offs aloud.",
-      },
-    ],
-    resources: [
-      { label: "MIT career handbook", href: "https://capd.mit.edu/resources/career-handbook/" },
-      { label: "MIT portfolio guidance", href: "https://capd.mit.edu/channels/portfolios/" },
-      { label: "Customize your GitHub profile", href: "https://docs.github.com/en/account-and-profile/how-tos/profile-customization/managing-your-profile-readme" },
-    ],
-  },
-] as const satisfies readonly LearningModule[];
-
-export type LearningTaskId = (typeof awsModules | typeof csModules)[number]["tasks"][number]["id"];
+export type LearningTaskId = (typeof awsModules)[number]["tasks"][number]["id"];

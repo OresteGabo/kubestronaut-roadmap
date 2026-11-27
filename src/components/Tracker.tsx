@@ -15,8 +15,7 @@ import { TrackerBackupControls } from "./TrackerBackupControls";
 
 const learningTracks = [
   { href: "#roadmap", label: "Kubernetes" },
-  { href: "#aws", label: "AWS" },
-  { href: "#computer-science", label: "Computer Science" },
+  { href: "#aws", label: "AWS certifications" },
 ] as const;
 
 function changeLearningTask(id: LearningTaskId, checked: boolean) {
@@ -47,7 +46,7 @@ export function Tracker({ children }: { readonly children: ReactNode }) {
             </span>
             Kubestronaut
           </div>
-          <nav aria-label="Learning tracks" className="col-span-2 row-start-2 flex w-full flex-wrap items-center gap-x-5 border-t border-line text-sm font-medium text-muted md:col-span-1 md:row-start-1 md:w-auto md:gap-x-6 md:border-none">
+          <nav aria-label="Certification roadmaps" className="col-span-2 row-start-2 flex w-full flex-wrap items-center gap-x-5 border-t border-line text-sm font-medium text-muted md:col-span-1 md:row-start-1 md:w-auto md:gap-x-6 md:border-none">
             {learningTracks.map(({ href, label }) => (
               <a key={href} href={href} className="inline-flex min-h-11 items-center hover:text-accent">
                 {label}

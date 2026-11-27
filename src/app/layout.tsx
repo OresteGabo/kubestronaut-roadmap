@@ -11,7 +11,7 @@ const spaceGrotesk = localFont({
 
 const title = "Kubernetes & Kubestronaut Roadmap | Oreste Gabo";
 const description =
-  "Track five Kubernetes certifications, then explore AWS certification paths and hands-on computer science projects.";
+  "Track five CNCF Kubernetes certifications and plan your next AWS certification. Save exam passes and study progress across both roadmaps.";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://k8s.orestegabo.dev"),

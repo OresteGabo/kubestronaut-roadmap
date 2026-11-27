@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import { awsModules, csModules } from "../data/learningData";
+import { awsModules } from "../data/learningData";
 import { roadmapData } from "../data/roadmapData";
 import { parseCalendarDate } from "./calendarDate";
 import {
@@ -13,11 +13,11 @@ import {
 
 const taskId = roadmapData[0].checklist[0].id;
 const awsTaskId = awsModules[0].tasks[0].id;
-const csTaskId = csModules[0].tasks[0].id;
+const retiredCsTaskId = "cs-programming-language";
 const exportedAt = new Date("2026-11-27T12:34:56.789Z");
 const fixture: TrackerData = {
   theme: "light",
-  learningCheckedTaskIds: [awsTaskId, csTaskId],
+  learningCheckedTaskIds: [awsTaskId],
   progress: {
     checkedTaskIds: [taskId],
     manualPasses: { cka: true },
@@ -46,12 +46,12 @@ test("exports readable JSON with an export timestamp and restores all tracker fi
   });
 });
 
-test("normalizes duplicate tasks, empty notes, and retired IDs", () => {
+test("normalizes duplicate tasks, empty notes, and retired IDs from older backups", () => {
   const backup = {
     version: 2,
     exportedAt: exportedAt.toISOString(),
     ...fixture,
-    learningCheckedTaskIds: [awsTaskId, awsTaskId, csTaskId, "aws-task-retired"],
+    learningCheckedTaskIds: [awsTaskId, awsTaskId, retiredCsTaskId, "aws-task-retired"],
     progress: {
       ...fixture.progress,
       checkedTaskIds: [taskId, taskId, "kcna-step-retired"],
@@ -62,7 +62,7 @@ test("normalizes duplicate tasks, empty notes, and retired IDs", () => {
   assert.deepEqual(readTrackerData(JSON.stringify(backup), "backup"), {
     ok: true,
     data: fixture,
-    retiredIdCount: 3,
+    retiredIdCount: 4,
   });
 });
 
@@ -98,8 +98,7 @@ test("rejects invalid data even when an invalid value belongs to a retired ID", 
   assert.equal(readTrackerData(JSON.stringify({ ...valid, theme: "system" }), "backup").ok, false);
 });
 
-
-test("loads version 1 saves and backups with Kubernetes progress and empty new tracks", () => {
+test("loads version 1 saves and backups with Kubernetes progress and an empty AWS checklist", () => {
   const legacy = { version: 1, theme: fixture.theme, progress: fixture.progress };
   const expected = {
     ok: true,
@@ -113,21 +112,20 @@ test("loads version 1 saves and backups with Kubernetes progress and empty new t
   );
 });
 
-test("rejects version 2 backups with a missing or invalid learning checklist", () => {
+test("rejects version 2 backups with a missing or invalid AWS checklist", () => {
   const raw = { version: 2, exportedAt: exportedAt.toISOString(), ...fixture };
-  for (const learningCheckedTaskIds of [undefined, null, awsTaskId, [csTaskId, 5], ["invalid id"]]) {
+  for (const learningCheckedTaskIds of [undefined, null, awsTaskId, [awsTaskId, 5], ["invalid id"]]) {
     assert.equal(readTrackerData(JSON.stringify({ ...raw, learningCheckedTaskIds }), "backup").ok, false);
   }
 });
 
-test("learning tracks use unique IDs and one pass step per AWS credential", () => {
-  const modules = [...awsModules, ...csModules];
-  const moduleIds = modules.map(({ id }) => id);
+test("AWS certifications use unique IDs and one pass step per credential", () => {
+  const moduleIds = awsModules.map(({ id }) => id);
   const taskIds = [
     ...roadmapData.flatMap(({ checklist }) => checklist.map(({ id }) => id)),
-    ...modules.flatMap(({ tasks }) => tasks.map(({ id }) => id)),
+    ...awsModules.flatMap(({ tasks }) => tasks.map(({ id }) => id)),
   ];
-  assert.equal(new Set(moduleIds).size, moduleIds.length);
+  assert.equal(new Set(moduleIds).size, awsModules.length);
   assert.equal(new Set(taskIds).size, taskIds.length);
 
   for (const { tasks } of awsModules) {

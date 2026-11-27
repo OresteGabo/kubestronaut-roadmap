@@ -1,29 +1,16 @@
-import { ArrowUpRight, ChevronDown, Cloud, GraduationCap } from "lucide-react";
-import { awsModules, csModules, type LearningModule, type LearningTaskId } from "../data/learningData";
+import { ArrowUpRight, ChevronDown, Cloud } from "lucide-react";
+import { awsModules, type LearningTaskId } from "../data/learningData";
 
 interface FurtherStudyProps {
   readonly checkedTaskIds: readonly LearningTaskId[];
   readonly onTaskChange: (id: LearningTaskId, checked: boolean) => void;
 }
 
-const studyTracks = [
-  {
-    id: "aws",
-    title: "AWS skills and certifications",
-    description: "Review cloud fundamentals if you need them, then start with Solutions Architect – Associate. Choose CloudOps for platform work or Developer for backend work.",
-    icon: Cloud,
-    modules: awsModules,
-  },
-  {
-    id: "computer-science",
-    title: "Computer science foundations",
-    description: "Apply coursework to a portfolio project. Build and test a small application, deploy it, and document the design decisions you can explain in an interview.",
-    icon: GraduationCap,
-    modules: csModules,
-  },
-] as const;
+type StudyModule = (typeof awsModules)[number];
+type AwsTask = StudyModule["tasks"][number];
 
-type StudyModule = (typeof studyTracks)[number]["modules"][number];
+const awsTasks = awsModules.flatMap(({ tasks }): readonly AwsTask[] => tasks);
+const examTasks = awsTasks.filter((task) => "kind" in task && task.kind === "exam-pass");
 
 interface StudyModuleProps {
   readonly module: StudyModule;
@@ -32,8 +19,7 @@ interface StudyModuleProps {
 }
 
 function StudyModuleDetails({ module, checked, onTaskChange }: StudyModuleProps) {
-  const content: LearningModule = module;
-  const { certification } = content;
+  const { certification } = module;
   const checkedSteps = module.tasks.filter(({ id }) => checked.has(id)).length;
   const examPassed = module.tasks.some((task) => (
     "kind" in task && task.kind === "exam-pass" && checked.has(task.id)
@@ -44,15 +30,13 @@ function StudyModuleDetails({ module, checked, onTaskChange }: StudyModuleProps)
       <summary className="grid min-h-18 cursor-pointer list-none grid-cols-[minmax(0,1fr)_auto_auto] items-center gap-3 px-4 py-3 hover:bg-raised/50 focus-visible:outline-offset-[-3px]! sm:px-6 [&::-webkit-details-marker]:hidden">
         <span className="grid min-w-0 gap-1.5">
           <span className="text-sm leading-snug font-semibold text-ink sm:text-base">{module.title}</span>
-          {certification && (
-            <span className="flex flex-wrap items-baseline gap-x-2 gap-y-0.5 text-xs font-medium">
-              <span className="font-mono text-muted">{certification.code}</span>
-              <span className={certification.priority === "Recommended first" ? "text-accent" : "text-muted"}>
-                {certification.priority}
-              </span>
-              {examPassed && <span className="text-accent">Passed</span>}
+          <span className="flex flex-wrap items-baseline gap-x-2 gap-y-0.5 text-xs font-medium">
+            <span className="font-mono text-muted">{certification.code}</span>
+            <span className={certification.priority === "Recommended first" ? "text-accent" : "text-muted"}>
+              {certification.priority}
             </span>
-          )}
+            {examPassed && <span className="text-accent">Passed</span>}
+          </span>
         </span>
         <span className="whitespace-nowrap font-mono text-xs text-muted tabular-nums">
           {checkedSteps}/{module.tasks.length}<span className="sr-only"> tasks complete</span>
@@ -63,7 +47,7 @@ function StudyModuleDetails({ module, checked, onTaskChange }: StudyModuleProps)
       <div className="grid gap-4 border-t border-line bg-canvas/40 px-4 py-4 text-sm leading-relaxed sm:px-6 sm:py-5">
         <div className="space-y-2 text-muted">
           <p>{module.summary}</p>
-          {certification?.versionNote && <p>{certification.versionNote}</p>}
+          {"versionNote" in certification && <p>{certification.versionNote}</p>}
         </div>
 
         <fieldset className="min-w-0">
@@ -91,7 +75,7 @@ function StudyModuleDetails({ module, checked, onTaskChange }: StudyModuleProps)
         </fieldset>
 
         <div className="border-l-2 border-accent-line pl-3">
-          <p className="font-semibold">Portfolio project</p>
+          <p className="font-semibold">Practice lab</p>
           <p className="mt-1 text-muted">{module.outcome}</p>
         </div>
 
@@ -112,45 +96,52 @@ function StudyModuleDetails({ module, checked, onTaskChange }: StudyModuleProps)
 
 export function FurtherStudy({ checkedTaskIds, onTaskChange }: FurtherStudyProps) {
   const checked = new Set(checkedTaskIds);
+  const checkedSteps = awsTasks.filter(({ id }) => checked.has(id)).length;
+  const examsPassed = examTasks.filter(({ id }) => checked.has(id)).length;
 
   return (
-    <section aria-labelledby="further-study-heading" className="mt-14 sm:mt-20">
-      <h2 id="further-study-heading" className="text-3xl leading-none font-semibold tracking-tight sm:text-4xl">
-        Further study
-      </h2>
-      <div className="mt-5 grid items-start gap-5 lg:grid-cols-2 lg:gap-6">
-        {studyTracks.map(({ id, title, description, icon: TrackIcon, modules }) => {
-          const taskIds = modules.flatMap(({ tasks }): readonly LearningTaskId[] => tasks.map(({ id }) => id));
-          const checkedSteps = taskIds.filter((id) => checked.has(id)).length;
-          const headingId = `${id}-heading`;
+    <section id="aws" aria-labelledby="aws-heading" tabIndex={-1} className="mt-14 min-w-0 scroll-mt-6 sm:mt-20">
+      <div className="flex items-center gap-3">
+        <span aria-hidden="true" className="grid size-9 shrink-0 place-items-center border border-accent-line bg-accent-wash text-accent">
+          <Cloud className="size-[1.125rem]" />
+        </span>
+        <h2 id="aws-heading" className="text-3xl leading-none font-semibold tracking-tight sm:text-4xl">
+          AWS certification roadmap
+        </h2>
+      </div>
 
-          return (
-            <section key={id} id={id} aria-labelledby={headingId} tabIndex={-1} className="min-w-0 scroll-mt-6 border border-line bg-panel">
-              <header className="border-b border-line px-4 pt-5 pb-4 sm:px-6 sm:pt-6">
-                <div className="flex items-center gap-3">
-                  <span aria-hidden="true" className="grid size-9 shrink-0 place-items-center border border-accent-line bg-accent-wash text-accent">
-                    <TrackIcon className="size-[1.125rem]" />
-                  </span>
-                  <h3 id={headingId} className="font-display text-xl leading-tight font-bold tracking-tight sm:text-2xl">{title}</h3>
-                </div>
-                <p className="mt-3 text-sm leading-relaxed text-muted">{description}</p>
-                <p className="mt-4 font-mono text-xs text-muted tabular-nums">{checkedSteps} / {taskIds.length} tasks done</p>
-                <div aria-hidden="true" className="mt-2 h-[3px] bg-raised">
-                  <div
-                    className="h-full bg-accent motion-safe:transition-[width] motion-safe:duration-500"
-                    style={{ width: `${(checkedSteps / taskIds.length) * 100}%` }}
-                  />
-                </div>
-              </header>
+      <div className="mt-5 grid border border-line bg-panel lg:grid-cols-[minmax(0,1fr)_minmax(0,1.5fr)]">
+        <div className="min-w-0 border-b border-line px-4 pt-5 pb-6 sm:px-6 sm:pt-6 lg:border-r lg:border-b-0">
+          <h3 className="text-base font-semibold">Recommended exam order</h3>
+          <p className="mt-2 max-w-md text-sm leading-relaxed text-muted">
+            Cloud Practitioner is optional. Start with Solutions Architect – Associate, then choose CloudOps for
+            platform work or Developer for backend work.
+          </p>
 
-              <div className="divide-y divide-line">
-                {modules.map((module) => (
-                  <StudyModuleDetails key={module.id} module={module} checked={checked} onTaskChange={onTaskChange} />
-                ))}
-              </div>
-            </section>
-          );
-        })}
+          <dl className="mt-6 grid grid-cols-2 gap-3 border-t border-line pt-4">
+            <div>
+              <dt className="text-sm text-muted">Exams passed</dt>
+              <dd className="mt-1 font-display text-2xl leading-none font-bold tabular-nums">{examsPassed} / {examTasks.length}</dd>
+            </div>
+            <div>
+              <dt className="text-sm text-muted">Checklist steps done</dt>
+              <dd className="mt-1 font-display text-2xl leading-none font-bold tabular-nums">{checkedSteps} / {awsTasks.length}</dd>
+            </div>
+          </dl>
+
+          <div aria-hidden="true" className="mt-4 h-[3px] bg-raised">
+            <div
+              className="h-full bg-accent motion-safe:transition-[width] motion-safe:duration-500"
+              style={{ width: `${(checkedSteps / awsTasks.length) * 100}%` }}
+            />
+          </div>
+        </div>
+
+        <div className="min-w-0 divide-y divide-line">
+          {awsModules.map((module) => (
+            <StudyModuleDetails key={module.id} module={module} checked={checked} onTaskChange={onTaskChange} />
+          ))}
+        </div>
       </div>
     </section>
   );

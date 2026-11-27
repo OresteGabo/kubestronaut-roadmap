@@ -1,8 +1,7 @@
 # Kubestronaut Roadmap
 
 A standalone Next.js App Router tracker for the five core CNCF Kubernetes
-certifications, with AWS certifications and computer science projects for further
-study. The production site is intended for `k8s.orestegabo.dev`.
+certifications and four AWS credentials. The production site is intended for `k8s.orestegabo.dev`.
 
 ## Open in WebStorm
 
@@ -39,9 +38,9 @@ Stop the development server, then serve the production build locally with
   exam logistics, weighted syllabus domains, checklist steps, and official
   resource links. Keep stage and task IDs stable so existing saves and backups
   can still find their entries.
-- [`src/data/learningData.ts`](src/data/learningData.ts) defines the AWS and computer
-  science tracks. Their checklists are saved alongside Kubernetes progress and
-  have their own counts.
+- [`src/data/learningData.ts`](src/data/learningData.ts) defines the AWS certification
+  roadmap. AWS checklist progress and exam passes have their own counts and
+  are saved alongside Kubernetes progress.
 - The overall percentage is checked steps divided by total steps. The
   certification counter is separate. Checking a stage’s exam-pass task or
   selecting **Mark Cert Passed** records one pass for that certification.
@@ -57,8 +56,9 @@ Stop the development server, then serve the production build locally with
   device or from localhost to the deployed app, select **Export JSON**, copy
   the file, then select **Import JSON** and confirm on the destination. Import
   replaces tracker data. Version 1 backups restore the Kubernetes tracker and
-  start the AWS and computer science checklists empty. **Reset Progress** clears
-  checklist progress on all tracks, pass overrides, notes, and the saved date.
+  start the AWS checklist empty. Version 2 backups restore both certification
+  roadmaps and skip entries for retired tasks. **Reset Progress** clears both
+  checklists, pass overrides, notes, and the saved date.
   It keeps the theme.
 - CNCF awards the Kubestronaut title after its active-certification and
   onboarding requirements are met. CKNE becomes an additional eligibility
