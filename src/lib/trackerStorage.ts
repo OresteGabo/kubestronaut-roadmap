@@ -1,15 +1,18 @@
+import { awsModules, csModules, type LearningTaskId } from "../data/learningData";
 import { roadmapData, type ChecklistItemId, type StageId } from "../data/roadmapData";
 import { parseCalendarDate } from "./calendarDate";
 import { createProgressState, type ProgressState } from "./progress";
 
 export const TRACKER_STORAGE_KEY = "dev.orestegabo.kubestronaut-roadmap.tracker";
-const TRACKER_VERSION = 1;
+const TRACKER_VERSION = 2;
+const LEGACY_TRACKER_VERSION = 1;
 
 export type TrackerTheme = "dark" | "light";
 
 export interface TrackerData {
   readonly progress: ProgressState;
   readonly theme: TrackerTheme;
+  readonly learningCheckedTaskIds: readonly LearningTaskId[];
 }
 
 type ReadResult =
@@ -20,10 +23,13 @@ const stageIds: ReadonlySet<string> = new Set(roadmapData.map(({ id }) => id));
 const taskIds: ReadonlySet<string> = new Set(
   roadmapData.flatMap(({ checklist }) => checklist.map(({ id }) => id)),
 );
+const learningTaskIds: ReadonlySet<string> = new Set(
+  [...awsModules, ...csModules].flatMap(({ tasks }) => tasks.map(({ id }) => id)),
+);
 const roadmapIdPattern = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 
 export function createTrackerData(): TrackerData {
-  return { progress: createProgressState(), theme: "dark" };
+  return { progress: createProgressState(), theme: "dark", learningCheckedTaskIds: [] };
 }
 
 export function serializeTracker(data: TrackerData): string {
@@ -45,7 +51,8 @@ export function readTrackerData(input: string, source: "storage" | "backup"): Re
   if (!isRecord(payload) || !Number.isInteger(payload.version)) {
     return { ok: false, message: "The tracker data is missing a valid version." };
   }
-  if (payload.version !== TRACKER_VERSION) {
+  const isLegacy = payload.version === LEGACY_TRACKER_VERSION;
+  if (!isLegacy && payload.version !== TRACKER_VERSION) {
     return { ok: false, message: "This tracker data version is unsupported." };
   }
   if (source === "backup" && !isExportDate(payload.exportedAt)) {
@@ -55,6 +62,11 @@ export function readTrackerData(input: string, source: "storage" | "backup"): Re
   const { progress, theme } = payload;
   if (!isRecord(progress) || (theme !== "dark" && theme !== "light")) {
     return { ok: false, message: "The tracker progress or theme is invalid." };
+  }
+
+  const learningCheckedTaskIds = isLegacy ? [] : payload.learningCheckedTaskIds;
+  if (!Array.isArray(learningCheckedTaskIds) || !learningCheckedTaskIds.every(isRoadmapId)) {
+    return { ok: false, message: "The AWS or computer science checklist is invalid." };
   }
 
   const { checkedTaskIds, manualPasses, notes, targetStartDate } = progress;
@@ -80,6 +92,12 @@ export function readTrackerData(input: string, source: "storage" | "backup"): Re
     else retiredIds.add(id);
   }
 
+  const recognizedLearningTasks = new Set<LearningTaskId>();
+  for (const id of learningCheckedTaskIds) {
+    if (isLearningTaskId(id)) recognizedLearningTasks.add(id);
+    else retiredIds.add(id);
+  }
+
   const recognizedPasses: Partial<Record<StageId, true>> = {};
   for (const [id, passed] of Object.entries(manualPasses)) {
     if (!isRoadmapId(id) || typeof passed !== "boolean") {
@@ -102,6 +120,7 @@ export function readTrackerData(input: string, source: "storage" | "backup"): Re
     ok: true,
     data: {
       theme,
+      learningCheckedTaskIds: [...recognizedLearningTasks],
       progress: {
         checkedTaskIds: [...recognizedTasks],
         manualPasses: recognizedPasses,
@@ -127,6 +146,10 @@ function isStageId(value: string): value is StageId {
 
 function isTaskId(value: string): value is ChecklistItemId {
   return taskIds.has(value);
+}
+
+function isLearningTaskId(value: string): value is LearningTaskId {
+  return learningTaskIds.has(value);
 }
 
 function isExportDate(value: unknown): boolean {

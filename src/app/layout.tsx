@@ -11,7 +11,7 @@ const spaceGrotesk = localFont({
 
 const title = "Kubernetes & Kubestronaut Roadmap | Oreste Gabo";
 const description =
-  "Plan your study for KCNA, CKA, CKAD, KCSA, and CKS. Track checklist progress, exam passes, and estimated completion dates.";
+  "Track five Kubernetes certifications, then explore AWS certification paths and hands-on computer science projects.";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://k8s.orestegabo.dev"),

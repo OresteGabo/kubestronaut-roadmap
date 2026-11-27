@@ -4,12 +4,32 @@ import { ArrowDownRight, ArrowUpRight, Asterisk, CalendarDays, Moon, Sun } from 
 import Image from "next/image";
 import type { ReactNode } from "react";
 import astronaut from "../app/assets/astronaut.webp";
+import type { LearningTaskId } from "../data/learningData";
 import { parseCalendarDate } from "../lib/calendarDate";
 import { getRoadmapProgress, setTargetStartDate } from "../lib/progress";
 import { updateTracker, useTracker } from "../lib/useTracker";
 import { DashboardSummary } from "./DashboardSummary";
+import { FurtherStudy } from "./FurtherStudy";
 import { RoadmapTimeline } from "./RoadmapTimeline";
 import { TrackerBackupControls } from "./TrackerBackupControls";
+
+const learningTracks = [
+  { href: "#roadmap", label: "Kubernetes" },
+  { href: "#aws", label: "AWS" },
+  { href: "#computer-science", label: "Computer Science" },
+] as const;
+
+function changeLearningTask(id: LearningTaskId, checked: boolean) {
+  updateTracker((current) => {
+    const ids = current.learningCheckedTaskIds;
+    if (ids.includes(id) === checked) return current;
+
+    return {
+      ...current,
+      learningCheckedTaskIds: checked ? [...ids, id] : ids.filter((taskId) => taskId !== id),
+    };
+  });
+}
 
 export function Tracker({ children }: { readonly children: ReactNode }) {
   const { data, today, storage } = useTracker();
@@ -20,14 +40,21 @@ export function Tracker({ children }: { readonly children: ReactNode }) {
   return (
     <div data-theme={theme} className="min-h-dvh bg-canvas font-sans text-ink">
       <header className="border-b border-line">
-        <div className="mx-auto flex min-h-17 max-w-7xl items-center justify-between gap-2 px-4 sm:px-8">
-          <div className="flex items-center gap-2.5 font-display text-base font-bold tracking-tight sm:text-lg">
+        <div className="mx-auto grid max-w-7xl grid-cols-[minmax(0,1fr)_auto] items-center gap-x-2 px-4 sm:px-8 md:min-h-17 md:grid-cols-[1fr_auto_1fr]">
+          <div className="flex min-h-17 items-center gap-2.5 font-display text-base font-bold tracking-tight sm:text-lg">
             <span aria-hidden="true" className="grid size-8 shrink-0 place-items-center rounded-full bg-accent text-accent-ink">
               <Asterisk strokeWidth={2.2} className="size-5" />
             </span>
             Kubestronaut
           </div>
-          <div className="flex shrink-0 items-center gap-2 sm:gap-4">
+          <nav aria-label="Learning tracks" className="col-span-2 row-start-2 flex w-full flex-wrap items-center gap-x-5 border-t border-line text-sm font-medium text-muted md:col-span-1 md:row-start-1 md:w-auto md:gap-x-6 md:border-none">
+            {learningTracks.map(({ href, label }) => (
+              <a key={href} href={href} className="inline-flex min-h-11 items-center hover:text-accent">
+                {label}
+              </a>
+            ))}
+          </nav>
+          <div className="flex shrink-0 items-center justify-end gap-2 sm:gap-4">
             <a
               href="https://orestegabo.dev"
               className="inline-flex min-h-11 items-center gap-1.5 px-1 text-xs font-medium text-muted hover:text-ink sm:text-sm"
@@ -117,6 +144,7 @@ export function Tracker({ children }: { readonly children: ReactNode }) {
           </>
         )}
         {children}
+        <FurtherStudy checkedTaskIds={data.learningCheckedTaskIds} onTaskChange={changeLearningTask} />
       </main>
     </div>
   );

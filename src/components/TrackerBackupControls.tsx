@@ -53,7 +53,7 @@ export function TrackerBackupControls({ data, storage }: TrackerBackupControlsPr
         setFeedback(`Import failed. ${result.message}`);
         return;
       }
-      if (!window.confirm("Replace your tracker data with this JSON backup?")) {
+      if (!window.confirm("Replace your tracker data across all learning tracks with this JSON backup?")) {
         setFeedback("Import canceled. Your tracker data was kept.");
         return;
       }
@@ -69,12 +69,16 @@ export function TrackerBackupControls({ data, storage }: TrackerBackupControlsPr
   }
 
   function resetProgress() {
-    if (!window.confirm("Reset all checklist progress, pass overrides, notes, and the start date?")) {
+    if (!window.confirm("Reset checklist progress across all learning tracks, pass overrides, notes, and the start date?")) {
       setFeedback("Reset canceled. Your progress was kept.");
       return;
     }
 
-    const status = updateTracker((current) => ({ ...current, progress: createProgressState() }), true);
+    const status = updateTracker((current) => ({
+      ...current,
+      progress: createProgressState(),
+      learningCheckedTaskIds: [],
+    }), true);
     setFeedback(status === "available" ? "Progress reset." : "Progress reset in this tab.");
   }
 

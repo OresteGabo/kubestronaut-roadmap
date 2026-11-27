@@ -1,7 +1,8 @@
 # Kubestronaut Roadmap
 
 A standalone Next.js App Router tracker for the five core CNCF Kubernetes
-certifications. The production site is intended for `k8s.orestegabo.dev`.
+certifications, with AWS certifications and computer science projects for further
+study. The production site is intended for `k8s.orestegabo.dev`.
 
 ## Open in WebStorm
 
@@ -38,6 +39,9 @@ Stop the development server, then serve the production build locally with
   exam logistics, weighted syllabus domains, checklist steps, and official
   resource links. Keep stage and task IDs stable so existing saves and backups
   can still find their entries.
+- [`src/data/learningData.ts`](src/data/learningData.ts) defines the AWS and computer
+  science tracks. Their checklists are saved alongside Kubernetes progress and
+  have their own counts.
 - The overall percentage is checked steps divided by total steps. The
   certification counter is separate. Checking a stage’s exam-pass task or
   selecting **Mark Cert Passed** records one pass for that certification.
@@ -48,11 +52,14 @@ Stop the development server, then serve the production build locally with
   high week and hour estimates. Completion windows add up remaining weeks in
   roadmap order and round cumulative offsets up to a calendar day. Stages with
   every step checked consume zero time and have no forecast window.
-- Progress, notes, date, and theme are saved in the current browser profile and
-  origin and sync across open tabs there. To move them to another device or from
-  localhost to the deployed app, select **Export JSON**, copy the file, then select **Import JSON** and confirm
-  on the destination. A valid import replaces that tracker’s data. **Reset
-  Progress** clears progress, notes, and the saved date and keeps the theme.
+- All checklists, notes, date, and theme are saved in the current browser
+  profile and origin and sync across open tabs there. To move them to another
+  device or from localhost to the deployed app, select **Export JSON**, copy
+  the file, then select **Import JSON** and confirm on the destination. Import
+  replaces tracker data. Version 1 backups restore the Kubernetes tracker and
+  start the AWS and computer science checklists empty. **Reset Progress** clears
+  checklist progress on all tracks, pass overrides, notes, and the saved date.
+  It keeps the theme.
 - CNCF awards the Kubestronaut title after its active-certification and
   onboarding requirements are met. CKNE becomes an additional eligibility
   requirement on February 15, 2027. The tracker counts the five core
